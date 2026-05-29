@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Parker Jackson — personal site." />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Parker Jackson</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✦</text></svg>" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="aurora" aria-hidden="true">
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+    <span class="orb orb-3"></span>
+  </div>
+
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="mark" href="/">PJ</a>
+      <nav class="nav-links">
+        <a href="#about">About</a>
+        <a href="#work">Work</a>
+        <a href="#connect">Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow reveal">Parker Jackson</p>
+      <h1 class="reveal" style="--delay: .08s">
+        Building things<br />worth building.
+      </h1>
+      <p class="lede reveal" style="--delay: .16s">
+        Real estate, technology, and the spaces in between.
+        A quiet corner of the internet that&rsquo;s entirely my own.
+      </p>
+      <div class="cta reveal" style="--delay: .24s">
+        <a class="btn btn-primary" href="#connect">Get in touch</a>
+        <a class="btn btn-ghost" href="#about">Learn more</a>
+      </div>
+    </section>
+
+    <section class="grid" id="about">
+      <article class="card reveal">
+        <div class="card-icon">◇</div>
+        <h3>About</h3>
+        <p>Investor and builder focused on property, design, and durable software. I like clean systems and things that last.</p>
+      </article>
+      <article class="card reveal" style="--delay: .08s">
+        <div class="card-icon">◈</div>
+        <h3>Work</h3>
+        <p id="work">Twin City Properties and a handful of projects I&rsquo;m proud of. Always something in the works.</p>
+      </article>
+      <article class="card reveal" style="--delay: .16s">
+        <div class="card-icon">✦</div>
+        <h3>Now</h3>
+        <p>Currently heads-down on a few new ideas. This page is a private space &mdash; thanks for stopping by.</p>
+      </article>
+    </section>
+
+    <section class="connect" id="connect">
+      <h2 class="reveal">Let&rsquo;s talk.</h2>
+      <p class="reveal" style="--delay: .08s">The best ideas start with a conversation.</p>
+      <a class="btn btn-primary reveal" style="--delay: .16s" href="mailto:parker@twincityproperties.com">parker@twincityproperties.com</a>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; <span id="year"></span> Parker Jackson. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Reveal-on-scroll
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+    // Subtle parallax on the aurora orbs
+    const orbs = document.querySelectorAll('.orb');
+    window.addEventListener('pointermove', (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5);
+      const y = (e.clientY / window.innerHeight - 0.5);
+      orbs.forEach((orb, i) => {
+        const depth = (i + 1) * 12;
+        orb.style.transform = `translate3d(${x * depth}px, ${y * depth}px, 0)`;
+      });
+    });
+  </script>
+</body>
+</html>
