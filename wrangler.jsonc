@@ -1,0 +1,23 @@
+{
+  // Cloudflare Workers + Static Assets configuration.
+  // Deploys with: npx wrangler deploy
+  //
+  // IMPORTANT: "name" must match the Worker name shown in your Cloudflare
+  // dashboard for this project. Rename it here if they differ.
+  "name": "parkerjackson-xyz",
+  "main": "src/index.js",
+  "compatibility_date": "2025-05-01",
+
+  "assets": {
+    // Static site lives here (index.html, styles.css, _headers).
+    "directory": "./public",
+    // Lets the Worker serve assets itself after the password check.
+    "binding": "ASSETS",
+    // Run the Worker on EVERY request so the password gate can't be bypassed.
+    "run_worker_first": true
+  },
+
+  "observability": {
+    "enabled": true
+  }
+}

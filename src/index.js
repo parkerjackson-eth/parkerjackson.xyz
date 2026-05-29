@@ -1,62 +1,61 @@
 /**
- * Edge password gate for parkerjackson.xyz
+ * Edge password gate for parkerjackson.xyz (Cloudflare Workers + Static Assets).
  *
- * Runs on every request before any static asset is served, so the site is
- * protected the moment it's deployed. Nothing is returned to an unauthenticated
- * visitor except the login page.
+ * Configured with `run_worker_first: true`, so this Worker runs on EVERY
+ * request before any static file is served. An unauthenticated visitor only
+ * ever receives the login page — the real site is never sent over the wire.
  *
- * Configure these in the Cloudflare Pages dashboard:
- *   Settings -> Variables and Secrets
- *     SITE_PASSWORD  (required)  the password visitors must enter
- *     AUTH_SECRET    (optional)  random string used to sign the session cookie
- *
- * If AUTH_SECRET is not set, SITE_PASSWORD is used to sign the cookie.
+ * Configure in the Cloudflare dashboard (Settings -> Variables and Secrets):
+ *   SITE_PASSWORD  (required)  the password visitors must enter
+ *   AUTH_SECRET    (optional)  random string used to sign session cookies.
+ *                              Falls back to SITE_PASSWORD if unset.
  */
 
 const COOKIE_NAME = "pj_session";
 const SESSION_TTL = 60 * 60 * 24 * 14; // 14 days, in seconds
 
-export const onRequest = async (context) => {
-  const { request, env, next } = context;
-  const password = env.SITE_PASSWORD;
+export default {
+  async fetch(request, env) {
+    const password = env.SITE_PASSWORD;
 
-  // Fail safe: if no password is configured, don't silently expose the site.
-  if (!password) {
-    return new Response(
-      "Site is not configured. Set the SITE_PASSWORD environment variable in Cloudflare Pages.",
-      { status: 503, headers: { "content-type": "text/plain; charset=utf-8" } }
-    );
-  }
-
-  const secret = env.AUTH_SECRET || password;
-  const url = new URL(request.url);
-
-  // Handle the login form submission.
-  if (request.method === "POST" && url.pathname === "/__auth") {
-    const form = await request.formData();
-    const submitted = String(form.get("password") || "");
-
-    if (timingSafeEqual(submitted, password)) {
-      const token = await createToken(secret);
-      return new Response(null, {
-        status: 303,
-        headers: {
-          Location: "/",
-          "Set-Cookie": cookie(COOKIE_NAME, token, SESSION_TTL),
-        },
-      });
+    // Fail safe: never silently expose the site if it isn't configured.
+    if (!password) {
+      return new Response(
+        "Site is not configured. Set the SITE_PASSWORD environment variable in Cloudflare.",
+        { status: 503, headers: { "content-type": "text/plain; charset=utf-8" } }
+      );
     }
-    return loginResponse(true);
-  }
 
-  // Already authenticated? Let the request through to the static assets.
-  const session = getCookie(request, COOKIE_NAME);
-  if (session && (await verifyToken(session, secret))) {
-    return next();
-  }
+    const secret = env.AUTH_SECRET || password;
+    const url = new URL(request.url);
 
-  // Not authenticated — show the gate (don't leak the requested page).
-  return loginResponse(false);
+    // Login form submission.
+    if (request.method === "POST" && url.pathname === "/__auth") {
+      const form = await request.formData();
+      const submitted = String(form.get("password") || "");
+
+      if (timingSafeEqual(submitted, password)) {
+        const token = await createToken(secret);
+        return new Response(null, {
+          status: 303,
+          headers: {
+            Location: "/",
+            "Set-Cookie": cookie(COOKIE_NAME, token, SESSION_TTL),
+          },
+        });
+      }
+      return loginResponse(true);
+    }
+
+    // Authenticated? Hand off to the static assets.
+    const session = getCookie(request, COOKIE_NAME);
+    if (session && (await verifyToken(session, secret))) {
+      return env.ASSETS.fetch(request);
+    }
+
+    // Not authenticated — show the gate (don't leak the requested page).
+    return loginResponse(false);
+  },
 };
 
 /* ----------------------------- token helpers ----------------------------- */
@@ -101,7 +100,7 @@ function base64url(bytes) {
   return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-// Constant-time string comparison to avoid leaking length/content via timing.
+// Constant-time comparison to avoid leaking content via timing.
 function timingSafeEqual(a, b) {
   const ab = enc.encode(a);
   const bb = enc.encode(b);
