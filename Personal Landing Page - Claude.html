@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parker Jackson</title>
+<meta name="description" content="Parker Jackson — operator, builder, and aspiring leader in real estate and operations, based in the Brazos Valley, Texas.">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --paper:    #f6f1e9;
+    --paper-2:  #efe7da;
+    --ink:      #211c19;
+    --ink-soft: #5d544c;
+    --maroon:   #6e1320;
+    --maroon-2: #8c1c2c;
+    --line:     rgba(33, 28, 25, 0.14);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Hanken Grotesk", sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Subtle paper grain */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 2; }
+
+  a { color: inherit; }
+
+  /* ---------- NAV ---------- */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(246, 241, 233, 0.82);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+  }
+  .monogram {
+    font-family: "Fraunces", serif;
+    font-weight: 600;
+    font-size: 1.3rem;
+    letter-spacing: 0.02em;
+  }
+  .monogram span { color: var(--maroon); }
+  .nav-links { display: flex; gap: 34px; }
+  .nav-links a {
+    text-decoration: none;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    transition: color 0.2s ease;
+  }
+  .nav-links a:hover { color: var(--maroon); }
+  @media (max-width: 640px) { .nav-links { display: none; } }
+
+  /* ---------- HERO ---------- */
+  .hero { padding: 120px 0 110px; }
+  .eyebrow {
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--maroon);
+    margin-bottom: 30px;
+    font-weight: 600;
+  }
+  .hero h1 {
+    font-family: "Fraunces", serif;
+    font-weight: 500;
+    font-size: clamp(2.7rem, 7vw, 5.4rem);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    max-width: 14ch;
+  }
+  .hero h1 em { font-style: italic; color: var(--maroon); }
+  .hero p.lede {
+    margin-top: 36px;
+    max-width: 52ch;
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    color: var(--ink-soft);
+  }
+  .cta-row { margin-top: 44px; display: flex; gap: 18px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 14px 26px;
+    border-radius: 2px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    transition: all 0.22s ease;
+  }
+  .btn-primary { background: var(--maroon); color: var(--paper); }
+  .btn-primary:hover { background: var(--maroon-2); transform: translateY(-2px); }
+  .btn-ghost { border: 1px solid var(--line); color: var(--ink); }
+  .btn-ghost:hover { border-color: var(--maroon); color: var(--maroon); }
+
+  /* ---------- SECTION SHELL ---------- */
+  section { padding: 92px 0; border-top: 1px solid var(--line); }
+  .section-label {
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 50px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .section-label::before {
+    content: "";
+    width: 26px;
+    height: 1px;
+    background: var(--maroon);
+  }
+
+  /* ---------- FOCUS GRID ---------- */
+  .focus-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .focus-card { background: var(--paper); padding: 40px 34px; }
+  .focus-card .num {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--maroon);
+    margin-bottom: 22px;
+  }
+  .focus-card h3 {
+    font-family: "Fraunces", serif;
+    font-weight: 500;
+    font-size: 1.55rem;
+    margin-bottom: 14px;
+  }
+  .focus-card p { font-size: 0.98rem; color: var(--ink-soft); }
+  @media (max-width: 760px) { .focus-grid { grid-template-columns: 1fr; } }
+
+  /* ---------- CURRENTLY ---------- */
+  .currently-head {
+    font-family: "Fraunces", serif;
+    font-weight: 500;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    max-width: 18ch;
+    margin-bottom: 46px;
+    line-height: 1.12;
+  }
+  .now-list { list-style: none; }
+  .now-list li {
+    display: flex;
+    gap: 26px;
+    padding: 22px 0;
+    border-top: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .now-list li:last-child { border-bottom: 1px solid var(--line); }
+  .now-list .tag {
+    font-size: 0.74rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--maroon);
+    min-width: 110px;
+    font-weight: 600;
+    padding-top: 4px;
+  }
+  .now-list .desc { font-size: 1.1rem; }
+
+  /* ---------- CONTACT ---------- */
+  .contact { text-align: center; }
+  .contact h2 {
+    font-family: "Fraunces", serif;
+    font-weight: 500;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    margin-bottom: 22px;
+  }
+  .contact p { color: var(--ink-soft); max-width: 46ch; margin: 0 auto 36px; }
+  .mail-link {
+    font-family: "Fraunces", serif;
+    font-size: clamp(1.3rem, 3vw, 1.9rem);
+    color: var(--maroon);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+  .mail-link:hover { border-color: var(--maroon); }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 36px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .footer-links { display: flex; gap: 22px; }
+  .footer-links a { text-decoration: none; transition: color 0.2s ease; }
+  .footer-links a:hover { color: var(--maroon); }
+
+  /* ---------- ANIMATION ---------- */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  .load { opacity: 0; transform: translateY(20px); animation: rise 0.8s ease forwards; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+  .d1 { animation-delay: 0.05s; }
+  .d2 { animation-delay: 0.18s; }
+  .d3 { animation-delay: 0.31s; }
+  .d4 { animation-delay: 0.44s; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <div class="monogram">Parker<span>.</span></div>
+      <div class="nav-links">
+        <a href="#focus">Focus</a>
+        <a href="#now">Now</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero" style="border-top:none;">
+    <div class="wrap">
+      <!-- EDIT: tweak any of this copy to sound like you -->
+      <p class="eyebrow load d1">COO · Twin City Properties · Brazos Valley, TX</p>
+      <h1 class="load d2">Operator by trade.<br><em>Builder</em> by instinct.</h1>
+      <p class="lede load d3">
+        I'm Parker Jackson. I run day-to-day operations for a family property
+        company managing 800+ units, and I'm building toward bigger things in
+        real estate, investing, and leadership. Faith, family, and the long
+        game drive most of what I do.
+      </p>
+      <div class="cta-row load d4">
+        <!-- EDIT: replace with your real email -->
+        <a class="btn btn-primary" href="mailto:you@example.com">
+          Get in touch &nbsp;&rarr;
+        </a>
+        <!-- EDIT: replace # with your LinkedIn URL -->
+        <a class="btn btn-ghost" href="#">LinkedIn</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOCUS -->
+  <section id="focus">
+    <div class="wrap">
+      <p class="section-label reveal">What I do</p>
+      <div class="focus-grid reveal">
+        <div class="focus-card">
+          <div class="num">01</div>
+          <h3>Operations</h3>
+          <p>Building the systems, scorecards, and teams that let a business
+             run well without me in every room.</p>
+        </div>
+        <div class="focus-card">
+          <div class="num">02</div>
+          <h3>Real Estate</h3>
+          <p>Managing hundreds of units today, working toward development and
+             acquisitions tomorrow.</p>
+        </div>
+        <div class="focus-card">
+          <div class="num">03</div>
+          <h3>The Long Game</h3>
+          <p>Faith, family, fitness, and steady reading. Compounding the small
+             things into the leader I want to become.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOW -->
+  <section id="now">
+    <div class="wrap">
+      <p class="section-label reveal">Now</p>
+      <h2 class="currently-head reveal">A snapshot of what has my attention these days.</h2>
+      <ul class="now-list reveal">
+        <li><span class="tag">Building</span><span class="desc">Operating systems and accountability at Twin City Properties</span></li>
+        <li><span class="tag">Training</span><span class="desc">Logging miles for an upcoming marathon</span></li>
+        <li><span class="tag">Reading</span><span class="desc">Leadership, operations, and personal growth, one book at a time</span></li>
+        <li><span class="tag">Home</span><span class="desc">Raising a young family in College Station</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <h2 class="reveal">Let's talk.</h2>
+      <p class="reveal">Always up for a good conversation about operations, real
+         estate, building teams, or what you're working on.</p>
+      <!-- EDIT: replace with your real email -->
+      <a class="mail-link reveal" href="mailto:you@example.com">you@example.com</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap" style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:14px;">
+    <div>&copy; <span id="year"></span> Parker Jackson</div>
+    <div class="footer-links">
+      <!-- EDIT: fill these in as you expand -->
+      <a href="#">LinkedIn</a>
+      <a href="mailto:you@example.com">Email</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
