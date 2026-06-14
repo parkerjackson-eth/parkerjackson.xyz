@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Parker Jackson</title>
+<meta name="description" content="Parker Jackson — operator and builder, COO at Twin City Properties. Full site coming soon.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Hanken+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0E1216; --text:#ECEAE3; --muted:#A9A79E; --subtle:#727981;
+    --accent:#E4533A; --accent-deep:#C8412B;
+    --line:rgba(236,234,227,.13); --line-2:rgba(236,234,227,.26);
+    --disp:"Bricolage Grotesque",sans-serif;
+    --sans:"Hanken Grotesk",-apple-system,sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,monospace;
+    --ease:cubic-bezier(.2,.7,.2,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100svh;
+    -webkit-font-smoothing:antialiased;position:relative;overflow:hidden;display:flex;flex-direction:column}
+  ::selection{background:rgba(228,83,58,.20)}
+  a{color:inherit}
+
+  /* atmosphere */
+  .ambient{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(40% 32% at 12% 8%,rgba(228,83,58,.12),transparent 62%),
+      radial-gradient(38% 34% at 92% 16%,rgba(95,168,224,.08),transparent 64%);
+    animation:drift 34s ease-in-out infinite}
+  .grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.7;
+    background-image:linear-gradient(rgba(236,234,227,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(236,234,227,.035) 1px,transparent 1px);
+    background-size:74px 74px;
+    -webkit-mask-image:radial-gradient(circle at 50% 28%,#000,transparent 82%);
+    mask-image:radial-gradient(circle at 50% 28%,#000,transparent 82%)}
+  .glow{position:fixed;width:560px;height:560px;left:0;top:0;z-index:0;pointer-events:none;border-radius:50%;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(circle,rgba(95,168,224,.12),rgba(228,83,58,.06) 42%,transparent 66%);
+    mix-blend-mode:screen;opacity:0;transition:opacity 1.2s var(--ease)}
+
+  .wrap{position:relative;z-index:3;width:100%;max-width:1000px;margin:0 auto;padding:0 48px}
+
+  /* header */
+  header{padding-top:calc(env(safe-area-inset-top,0px) + 30px)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between}
+  .mk{font-family:var(--mono);font-weight:500;font-size:18px;letter-spacing:-.01em;color:var(--text);display:inline-flex;align-items:baseline;text-decoration:none}
+  .mk .car{color:var(--accent);margin-left:1px;animation:blink 1.15s steps(1) infinite}
+  .hello{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .25s var(--ease);white-space:nowrap}
+  .hello:hover{color:var(--accent)}
+
+  /* main */
+  main{flex:1;display:flex;align-items:center;padding:40px 0}
+  .kick{font-family:var(--mono);font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);
+    margin-bottom:26px;display:flex;align-items:center;gap:13px}
+  .kick::before{content:"";width:30px;height:2px;background:var(--accent);border-radius:2px}
+  .name{position:relative}
+  .name .l{display:block;overflow:hidden;padding:0 .06em;margin:0 -.06em}
+  .name .l i{display:block;font-style:normal;font-family:var(--disp);font-weight:700;
+    font-size:clamp(58px,13vw,168px);line-height:.84;letter-spacing:-.05em;color:var(--text);transform:translateY(0)}
+  .name.armed .l i{transform:translateY(112%)}
+  .name.playing .l i{transition:transform 1.02s var(--ease)}
+  .name.playing .l:nth-child(2) i{transition-delay:.09s}
+  .name::after{content:"";position:absolute;z-index:-1;left:-3%;top:-4%;width:54%;height:108%;
+    background:radial-gradient(closest-side,rgba(228,83,58,.10),transparent 72%);filter:blur(54px);pointer-events:none}
+  .lede{font-size:clamp(17px,2vw,21px);font-weight:300;color:var(--muted);line-height:1.6;max-width:40ch;margin:34px 0 0}
+  .lede em{font-family:"Bricolage Grotesque";font-style:normal;color:var(--text);font-weight:500}
+
+  .row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:40px}
+  .status{display:inline-flex;align-items:center;gap:9px;padding:10px 16px;border-radius:999px;
+    background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.13);
+    font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+  .status .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2.6s ease-in-out infinite}
+  .links{display:flex;gap:26px;flex-wrap:wrap}
+  .mlink{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--text);
+    text-decoration:none;display:inline-flex;align-items:center;gap:8px;padding-bottom:4px;
+    border-bottom:1px solid var(--line-2);transition:color .25s var(--ease),border-color .25s var(--ease)}
+  .mlink:hover{color:var(--accent);border-color:var(--accent)}
+
+  /* footer */
+  footer{padding:0 0 calc(env(safe-area-inset-bottom,0px) + 34px);position:relative;z-index:3}
+  footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  footer span{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--subtle)}
+
+  .edge{position:fixed;right:16px;top:50%;transform:translateY(-50%);writing-mode:vertical-rl;z-index:3;
+    font-family:var(--mono);font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--subtle);opacity:.6}
+
+  @keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-2.5%,2%) scale(1.06)}}
+  @keyframes pulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.25)}}
+  @keyframes blink{0%,50%{opacity:1}50.01%,100%{opacity:0}}
+
+  @media(max-width:680px){.edge{display:none}}
+  @media(max-width:560px){.wrap{padding:0 24px}}
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .ambient{animation:none}.glow{display:none}.name .l i{transform:none!important}
+    .status .dot,.mk .car{animation:none}
+  }
+</style>
+</head>
+<body>
+  <div class="ambient"></div>
+  <div class="grid"></div>
+  <div class="glow" id="glow"></div>
+
+  <header>
+    <div class="wrap">
+      <a class="mk" href="#" aria-label="Parker Jackson">pj<span class="car">_</span></a>
+      <a class="hello" href="/cdn-cgi/l/email-protection#6e060b0202012e1e0f1c050b1c040f0d051d010040161714">Say hello →</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="kick">Operator · Builder · COO</div>
+      <div class="name" id="name" aria-label="Parker Jackson">
+        <span class="l"><i>Parker</i></span>
+        <span class="l"><i>Jackson</i></span>
+      </div>
+      <p class="lede">Operator and builder, <em>COO at Twin City Properties</em>. A fuller site is on its way. Until then, the inbox is open.</p>
+      <div class="row">
+        <span class="status"><span class="dot"></span>Site in progress</span>
+        <div class="links">
+          <a class="mlink" href="/cdn-cgi/l/email-protection#ff979a939390bf8f9e8d949a8d959e9c948c9091d1878685"><span class="__cf_email__" data-cfemail="5a323f3636351a2a3b28313f28303b393129353474222320">[email&#160;protected]</span> →</a>
+          <a class="mlink" href="https://www.linkedin.com/in/christianparkerjackson/" target="_blank" rel="noopener">LinkedIn →</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>© 2026 Parker Jackson</span>
+      <span>College Station, TX</span>
+    </div>
+  </footer>
+
+  <span class="edge">parkerjackson.xyz · est. 2026</span>
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // name entrance — base is visible; animate from hidden only when focused, self-heal otherwise
+    (function(){
+      if (reduce || !document.hasFocus()) return;
+      var n = document.getElementById('name');
+      n.classList.add('armed');
+      var go = function(){ n.classList.add('playing'); n.classList.remove('armed'); };
+      requestAnimationFrame(function(){ requestAnimationFrame(go); });
+      setTimeout(function(){ n.classList.remove('armed'); n.classList.remove('playing'); }, 1500);
+    })();
+
+    // cursor light
+    if (!reduce){
+      var glow = document.getElementById('glow');
+      var tx=innerWidth/2, ty=innerHeight/2, gx=tx, gy=ty, on=false;
+      addEventListener('mousemove', function(e){ tx=e.clientX; ty=e.clientY; if(!on){on=true;glow.style.opacity='1';} });
+      addEventListener('mouseleave', function(){ on=false; glow.style.opacity='0'; });
+      (function loop(){ gx+=(tx-gx)*.08; gy+=(ty-gy)*.08; glow.style.transform='translate('+(gx-280)+'px,'+(gy-280)+'px)'; requestAnimationFrame(loop); })();
+    }
+  </script>
+</body>
+</html>
