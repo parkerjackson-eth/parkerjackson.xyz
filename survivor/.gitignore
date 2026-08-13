@@ -1,0 +1,17 @@
+node_modules/
+.next/
+out/
+build/
+.DS_Store
+
+# Secrets — never commit these. See .env.example.
+.env
+.env*.local
+
+# Local SQLite databases
+*.db
+*.db-journal
+prisma/dev.db*
+
+*.tsbuildinfo
+next-env.d.ts

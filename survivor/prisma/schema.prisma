@@ -1,0 +1,204 @@
+// Survivor Fantasy League — database schema
+//
+// Provider note: this targets PostgreSQL (Supabase / Neon / any managed Postgres).
+// To run on SQLite instead, change `provider` below to "sqlite" and point
+// DATABASE_URL at a file (e.g. file:./dev.db), then re-run `npm run db:push`.
+// No other change is needed — this schema deliberately avoids native enums and
+// arrays so it is portable between the two. See the README for the tradeoff.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// People
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  displayName  String
+  avatarUrl    String?
+  // Site owner. Can create seasons, enter casts, and view every league.
+  isSuperAdmin Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  memberships          LeagueMember[]
+  commissionedLeagues  League[]       @relation("LeagueCommissioner")
+
+  @@index([email])
+}
+
+// ---------------------------------------------------------------------------
+// The show
+// ---------------------------------------------------------------------------
+
+/// One real Survivor season. `status` is one of: upcoming | active | completed
+model Season {
+  id           String    @id @default(cuid())
+  name         String
+  premiereDate DateTime?
+  status       String    @default("upcoming")
+  /// Free text for season-specific twists (Edge of Extinction, Redemption
+  /// Island, final-three fire making, etc.) so the commissioner knows which
+  /// twist scoring rules to switch on.
+  notes        String?
+  createdAt    DateTime  @default(now())
+
+  castaways    Castaway[]
+  episodes     Episode[]
+  leagues      League[]
+  scoringRules ScoringRule[]
+}
+
+/// `status` is one of: active | jury | finalist | winner | eliminated
+model Castaway {
+  id                 String   @id @default(cuid())
+  seasonId           String
+  name               String
+  age                Int?
+  hometown           String?
+  occupation         String?
+  startingTribe      String?
+  photoUrl           String?
+  bio                String?
+  status             String   @default("active")
+  eliminationEpisode Int?
+  finalPlacement     Int?
+  createdAt          DateTime @default(now())
+
+  season Season         @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  picks  DraftPick[]
+  events EpisodeEvent[]
+
+  @@unique([seasonId, name])
+  @@index([seasonId])
+}
+
+model Episode {
+  id       String    @id @default(cuid())
+  seasonId String
+  number   Int
+  airDate  DateTime?
+  title    String?
+  notes    String?
+
+  season Season         @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  events EpisodeEvent[]
+
+  @@unique([seasonId, number])
+  @@index([seasonId])
+}
+
+/// One thing that happened to one castaway in one episode. A castaway can have
+/// several rows per episode. `count` covers repeatable events (jury votes are
+/// scored per vote); everything else stays at 1.
+///
+/// `pointOverride` lets a commissioner change the value of this single
+/// instance without touching the league's scoring table.
+model EpisodeEvent {
+  id            String   @id @default(cuid())
+  episodeId     String
+  castawayId    String
+  eventType     String
+  count         Int      @default(1)
+  pointOverride Int?
+  notes         String?
+  createdAt     DateTime @default(now())
+
+  episode  Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  castaway Castaway @relation(fields: [castawayId], references: [id], onDelete: Cascade)
+
+  @@index([episodeId])
+  @@index([castawayId])
+}
+
+// ---------------------------------------------------------------------------
+// The league
+// ---------------------------------------------------------------------------
+
+model League {
+  id             String    @id @default(cuid())
+  seasonId       String
+  name           String
+  commissionerId String
+  joinCode       String    @unique
+  rosterSize     Int       @default(3)
+  /// No draft picks may be recorded once this passes.
+  draftLockAt    DateTime?
+  createdAt      DateTime  @default(now())
+
+  season       Season        @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  commissioner User          @relation("LeagueCommissioner", fields: [commissionerId], references: [id])
+  members      LeagueMember[]
+  picks        DraftPick[]
+  scoringRules ScoringRule[]
+
+  @@index([seasonId])
+  @@index([commissionerId])
+}
+
+model LeagueMember {
+  id            String   @id @default(cuid())
+  leagueId      String
+  userId        String
+  teamName      String
+  /// Position in the draft order. Null until the commissioner sets the order.
+  draftPosition Int?
+  joinedAt      DateTime @default(now())
+
+  league League      @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  picks  DraftPick[]
+
+  @@unique([leagueId, userId])
+  @@index([leagueId])
+}
+
+model DraftPick {
+  id             String   @id @default(cuid())
+  leagueId       String
+  leagueMemberId String
+  castawayId     String
+  pickNumber     Int
+  pickedAt       DateTime @default(now())
+
+  league   League       @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  member   LeagueMember @relation(fields: [leagueMemberId], references: [id], onDelete: Cascade)
+  castaway Castaway     @relation(fields: [castawayId], references: [id], onDelete: Cascade)
+
+  /// Database-level guarantee that one castaway cannot be drafted twice in the
+  /// same league, even if two people click at the same instant.
+  @@unique([leagueId, castawayId])
+  @@unique([leagueId, pickNumber])
+  @@index([leagueMemberId])
+}
+
+/// Point value for one event type. Attached to EITHER a season (the default
+/// every league on that season inherits) OR a single league (that league's
+/// override). Exactly one of seasonId / leagueId is set.
+///
+/// These live outside EpisodeEvent on purpose: changing a point value re-scores
+/// the standings without rewriting the history of what actually happened.
+model ScoringRule {
+  id        String  @id @default(cuid())
+  seasonId  String?
+  leagueId  String?
+  eventType String
+  points    Int
+  /// Twist rules (Edge of Extinction, Redemption Island) ship disabled and get
+  /// switched on only for the seasons that use them.
+  enabled   Boolean @default(true)
+
+  season Season? @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  league League? @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+
+  @@unique([seasonId, eventType])
+  @@unique([leagueId, eventType])
+}
